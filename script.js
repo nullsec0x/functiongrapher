@@ -1,20 +1,18 @@
-// Terminal welcome message with typewriter effect
-// Terminal welcome message with typewriter effect
 const welcomeMessages = [
     "INITIALIZING FUNCTION GRAPHER...",
     "LOADING MATHEMATICAL MODULES...",
     "ESTABLISHING COORDINATE SYSTEM...",
     "READY FOR INPUT.",
-    "", // Empty string for extra space
+    "", 
     "ENTER MATHEMATICAL FUNCTIONS TO VISUALIZE:",
     "• sin(x), cos(x), tan(x)",
     "• x^2, x² (both notations supported)",
     "• x³, sqrt(x), log(x)",
     "• pi, e constants supported",
-    "", // Empty string for extra space
+    "", 
     "USE MOUSE/TOUCH TO INTERACT WITH GRAPH",
     "SCROLL/PINCH TO ZOOM",
-    ""  // Final empty string for spacing
+    ""  
 ];
 
 let messageIndex = 0;
@@ -29,23 +27,20 @@ function typeWriter() {
         const currentMessage = welcomeMessages[messageIndex];
 
         if (charIndex < currentMessage.length) {
-            // Build content up to current character
             currentContent = currentContent.replace('<span class="cursor"></span>', '');
             currentContent += currentMessage.charAt(charIndex) + '<span class="cursor"></span>';
             terminalElement.innerHTML = currentContent;
             charIndex++;
             setTimeout(typeWriter, 50 + Math.random() * 50);
         } else {
-            // Remove cursor when line is complete and add double line break for spacing
             currentContent = currentContent.replace('<span class="cursor"></span>', '');
-            currentContent += '<br><br>'; // Double line break for spacing
+            currentContent += '<br><br>'; 
             terminalElement.innerHTML = currentContent;
             messageIndex++;
             charIndex = 0;
             setTimeout(typeWriter, 200);
         }
     } else {
-        // Add blinking cursor at the end of all messages
         terminalElement.innerHTML = currentContent + '<span class="cursor"></span>';
         isTyping = false;
 
@@ -60,9 +55,6 @@ function typeWriter() {
     }
 }
 
-// Rest of the original file remains exactly the same....
-
-// Graph functionality
 class FunctionGrapher {
     constructor() {
         this.canvas = document.getElementById('graph-canvas');
@@ -98,6 +90,14 @@ class FunctionGrapher {
 
         this.originX = rect.width / 2;
         this.originY = rect.height / 2;
+        
+        if (rect.width < 480) {
+            this.scaleX = Math.max(20, rect.width / 15);
+            this.scaleY = Math.max(20, rect.height / 12);
+        } else if (rect.width < 768) {
+            this.scaleX = Math.max(30, rect.width / 20);
+            this.scaleY = Math.max(30, rect.height / 15);
+        }
     }
 
     setupEventListeners() {
@@ -115,12 +115,13 @@ class FunctionGrapher {
         this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
         this.canvas.addEventListener('mouseleave', () => this.handleMouseUp());
 
-        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
-        this.canvas.addEventListener('touchend', () => this.handleTouchEnd());
+        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
 
         this.canvas.addEventListener('gesturestart', (e) => e.preventDefault());
         this.canvas.addEventListener('gesturechange', (e) => this.handlePinchZoom(e));
+        this.canvas.addEventListener('gestureend', (e) => e.preventDefault());
 
         window.addEventListener('resize', () => {
             this.setupCanvas();
@@ -284,10 +285,11 @@ class FunctionGrapher {
 
     handlePinchZoom(e) {
         e.preventDefault();
-        const zoomFactor = e.scale;
-
-        this.scaleX *= zoomFactor;
-        this.scaleY *= zoomFactor;
+        
+        const zoomFactor = Math.max(0.5, Math.min(2.0, e.scale));
+        
+        this.scaleX = Math.max(5, Math.min(200, this.scaleX * zoomFactor));
+        this.scaleY = Math.max(5, Math.min(200, this.scaleY * zoomFactor));
 
         this.redraw();
     }
@@ -325,16 +327,26 @@ class FunctionGrapher {
 
     handleTouchStart(e) {
         e.preventDefault();
+        
         if (e.touches.length === 1) {
             const rect = this.canvas.getBoundingClientRect();
             this.lastX = e.touches[0].clientX - rect.left;
             this.lastY = e.touches[0].clientY - rect.top;
             this.isDragging = true;
+        } else if (e.touches.length === 2) {
+            this.isDragging = false;
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            this.lastDistance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
         }
     }
 
     handleTouchMove(e) {
         e.preventDefault();
+        
         if (e.touches.length === 1 && this.isDragging) {
             const rect = this.canvas.getBoundingClientRect();
             const touchX = e.touches[0].clientX - rect.left;
@@ -351,11 +363,32 @@ class FunctionGrapher {
 
             this.lastX = touchX;
             this.lastY = touchY;
+        } else if (e.touches.length === 2) {
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+            
+            if (this.lastDistance) {
+                const zoomFactor = distance / this.lastDistance;
+                const clampedZoom = Math.max(0.8, Math.min(1.2, zoomFactor));
+                
+                this.scaleX = Math.max(5, Math.min(200, this.scaleX * clampedZoom));
+                this.scaleY = Math.max(5, Math.min(200, this.scaleY * clampedZoom));
+                
+                this.redraw();
+            }
+            
+            this.lastDistance = distance;
         }
     }
 
-    handleTouchEnd() {
+    handleTouchEnd(e) {
+        e.preventDefault();
         this.isDragging = false;
+        this.lastDistance = null;
     }
 
     updateCoordinates(mouseX, mouseY) {
