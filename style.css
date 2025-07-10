@@ -15,7 +15,6 @@ body {
     position: relative;
 }
 
-/* Matrix rain effect background */
 body::before {
     content: '';
     position: fixed;
@@ -36,7 +35,6 @@ body::before {
     100% { transform: translate(20px, 20px); }
 }
 
-/* Terminal welcome message */
 #terminal-welcome {
     position: fixed;
     top: 20px;
@@ -65,7 +63,6 @@ body::before {
     51%, 100% { opacity: 0; }
 }
 
-/* Main container */
 .container {
     display: flex;
     flex-direction: column;
@@ -91,7 +88,6 @@ h1 {
     letter-spacing: 2px;
 }
 
-/* Input styling */
 #function-input {
     background-color: #001100;
     border: 2px solid #00ff00;
@@ -119,7 +115,6 @@ h1 {
     opacity: 0.7;
 }
 
-/* Button styling */
 #graph-button {
     background: linear-gradient(45deg, #001100, #003300);
     border: 2px solid #00ff00;
@@ -164,18 +159,18 @@ h1 {
     left: 100%;
 }
 
-/* Canvas styling */
 #graph-canvas {
     border: 2px solid #00ff00;
     border-radius: 8px;
     background-color: #000000;
     box-shadow: 0 0 20px #00ff0030;
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
     display: block;
+    touch-action: none; 
 }
 
-/* Coordinates display */
 #coordinates {
     position: absolute;
     top: 10px;
@@ -191,7 +186,6 @@ h1 {
     box-shadow: 0 0 10px #00ff0050;
 }
 
-/* Mobile responsiveness */
 @media (max-width: 768px) {
     .container {
         padding: 15px;
@@ -206,7 +200,7 @@ h1 {
     }
     
     #function-input {
-        font-size: 16px; /* Prevent zoom on iOS */
+        font-size: 16px; 
         padding: 12px 15px;
     }
     
@@ -214,12 +208,21 @@ h1 {
         padding: 12px 25px;
         width: 100%;
         max-width: 300px;
+        font-size: 16px;
+        min-height: 48px; 
     }
     
     #graph-canvas {
         width: 100%;
         max-width: 100%;
-        height: auto;
+        height: 300px; 
+    }
+    
+    #coordinates {
+        font-size: 11px;
+        padding: 6px 10px;
+        top: 8px;
+        left: 8px;
     }
 }
 
@@ -230,18 +233,32 @@ h1 {
     
     h1 {
         margin-bottom: 20px;
+        font-size: 1.8rem;
     }
     
     #function-input {
         margin-bottom: 15px;
+        padding: 14px 16px;
+        font-size: 16px;
+        min-height: 48px; 
     }
     
     #graph-button {
         margin-bottom: 20px;
+        padding: 14px 20px;
+        min-height: 48px; 
+    }
+    
+    #graph-canvas {
+        height: 250px; 
+    }
+    
+    #coordinates {
+        font-size: 10px;
+        padding: 4px 8px;
     }
 }
 
-/* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
     #graph-button:hover {
         background: linear-gradient(45deg, #001100, #003300);
@@ -254,7 +271,6 @@ h1 {
     }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
     body {
         background-color: #000000;
@@ -265,7 +281,6 @@ h1 {
     }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
