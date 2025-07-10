@@ -19,8 +19,45 @@ let messageIndex = 0;
 let charIndex = 0;
 let isTyping = true;
 let currentContent = "";
+let enterPressCount = 0;
+let lastEnterTime = 0;
+let skipIntro = false;
+
+function skipToMain() {
+    if (skipIntro) return;
+    
+    skipIntro = true;
+    const terminalElement = document.getElementById('terminal-welcome');
+    
+    terminalElement.style.opacity = '0';
+    terminalElement.style.transition = 'opacity 0.5s ease-out';
+    
+    setTimeout(() => {
+        document.querySelector('.container').classList.add('show');
+    }, 600);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && isTyping && !skipIntro) {
+        const currentTime = Date.now();
+        
+        if (currentTime - lastEnterTime < 500) {
+            enterPressCount++;
+            if (enterPressCount >= 2) {
+                skipToMain();
+                return;
+            }
+        } else {
+            enterPressCount = 1;
+        }
+        
+        lastEnterTime = currentTime;
+    }
+});
 
 function typeWriter() {
+    if (skipIntro) return;
+    
     const terminalElement = document.getElementById('terminal-welcome');
 
     if (messageIndex < welcomeMessages.length) {
@@ -29,28 +66,30 @@ function typeWriter() {
         if (charIndex < currentMessage.length) {
             currentContent = currentContent.replace('<span class="cursor"></span>', '');
             currentContent += currentMessage.charAt(charIndex) + '<span class="cursor"></span>';
-            terminalElement.innerHTML = currentContent;
+            terminalElement.innerHTML = currentContent + '<div id="intro-footer" class="footer">[Double Press ENTER To Skip Intro]</div>';
             charIndex++;
             setTimeout(typeWriter, 50 + Math.random() * 50);
         } else {
             currentContent = currentContent.replace('<span class="cursor"></span>', '');
             currentContent += '<br><br>'; 
-            terminalElement.innerHTML = currentContent;
+            terminalElement.innerHTML = currentContent + '<div id="intro-footer" class="footer">[Double Press ENTER To Skip Intro]</div>';
             messageIndex++;
             charIndex = 0;
             setTimeout(typeWriter, 200);
         }
     } else {
-        terminalElement.innerHTML = currentContent + '<span class="cursor"></span>';
+        terminalElement.innerHTML = currentContent + '<span class="cursor"></span><div id="intro-footer" class="footer">[Double Press ENTER To Skip Intro]</div>';
         isTyping = false;
 
         setTimeout(() => {
-            terminalElement.style.opacity = '0';
-            terminalElement.style.transition = 'opacity 1s ease-out';
+            if (!skipIntro) {
+                terminalElement.style.opacity = '0';
+                terminalElement.style.transition = 'opacity 1s ease-out';
 
-            setTimeout(() => {
-                document.querySelector('.container').classList.add('show');
-            }, 1200);
+                setTimeout(() => {
+                    document.querySelector('.container').classList.add('show');
+                }, 1200);
+            }
         }, 2000);
     }
 }
