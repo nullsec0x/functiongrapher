@@ -281,11 +281,48 @@ h1 {
     }
 }
 
+.footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00aa00;
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.7;
+    animation: pulse 2s infinite;
+    z-index: 1001;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        font-size: 11px;
+        bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        font-size: 10px;
+        bottom: 10px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+    
+    .footer {
+        animation: none;
+        opacity: 0.7;
     }
 }
 
