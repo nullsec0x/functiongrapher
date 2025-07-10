@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000000;
+    color: #00ff00;
+    font-family: 'Fira Code', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Matrix rain effect background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 98%, #00ff0020 100%),
+        linear-gradient(180deg, transparent 98%, #00ff0020 100%);
+    background-size: 20px 20px;
+    z-index: -1;
+    animation: matrix-grid 20s linear infinite;
+}
+
+@keyframes matrix-grid {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(20px, 20px); }
+}
+
+/* Terminal welcome message */
+#terminal-welcome {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 14px;
+    z-index: 1000;
+    max-width: calc(100vw - 40px);
+    word-wrap: break-word;
+}
+
+.terminal-text {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.cursor {
+    display: inline-block;
+    background-color: #00ff00;
+    width: 8px;
+    height: 16px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    margin-top: 60px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.container.show {
+    opacity: 1;
+}
+
+h1 {
+    color: #00ff00;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 0 0 5px #00ff00;
+    letter-spacing: 2px;
+}
+
+/* Input styling */
+#function-input {
+    background-color: #001100;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Fira Code', monospace;
+    font-size: clamp(14px, 2.5vw, 18px);
+    padding: 15px 20px;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00ff0050;
+}
+
+#function-input:focus {
+    border-color: #00ff00;
+    box-shadow: 0 0 20px #00ff00;
+    background-color: #002200;
+}
+
+#function-input::placeholder {
+    color: #00aa00;
+    opacity: 0.7;
+}
+
+/* Button styling */
+#graph-button {
+    background: linear-gradient(45deg, #001100, #003300);
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Fira Code', monospace;
+    font-size: clamp(14px, 2.5vw, 16px);
+    font-weight: 600;
+    padding: 15px 30px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px #00ff0050;
+    position: relative;
+    overflow: hidden;
+}
+
+#graph-button:hover {
+    background: linear-gradient(45deg, #003300, #005500);
+    box-shadow: 0 0 25px #00ff00;
+    transform: translateY(-2px);
+}
+
+#graph-button:active {
+    transform: translateY(0);
+}
+
+#graph-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #00ff0030, transparent);
+    transition: left 0.5s;
+}
+
+#graph-button:hover::before {
+    left: 100%;
+}
+
+/* Canvas styling */
+#graph-canvas {
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    background-color: #000000;
+    box-shadow: 0 0 20px #00ff0030;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Coordinates display */
+#coordinates {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 17, 0, 0.9);
+    color: #00ff00;
+    padding: 8px 12px;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px #00ff0050;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        margin-top: 80px;
+    }
+    
+    #terminal-welcome {
+        font-size: 12px;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+    }
+    
+    #function-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 12px 15px;
+    }
+    
+    #graph-button {
+        padding: 12px 25px;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    #graph-canvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+    }
+    
+    #function-input {
+        margin-bottom: 15px;
+    }
+    
+    #graph-button {
+        margin-bottom: 20px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    #graph-button:hover {
+        background: linear-gradient(45deg, #001100, #003300);
+        transform: none;
+    }
+    
+    #graph-button:active {
+        background: linear-gradient(45deg, #003300, #005500);
+        transform: scale(0.98);
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    body {
+        background-color: #000000;
+    }
+    
+    #function-input, #graph-button {
+        border-width: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
